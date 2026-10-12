@@ -420,6 +420,7 @@ Deviations from the plan text above, found while building. Each was tested.
 | thermo-nuclear | `cursor-team-kit` plugin | only the `thermo-nuclear-code-quality-review` skill directory | The whole kit adds 17 unrelated skills |
 | pyright-lsp, gopls-lsp, hookify | per team | `defaultEnabled: false`; enable in the project settings | Not every team needs them |
 | Setup logic | `setup.sh` / `setup.ps1` | Thin wrappers; the work is `bin/mcs_setup.py` | One implementation for both platforms |
+| Plugin install | `claude plugin install <p> --scope project` | Run by setup for the 12 default plugins, undone by uninstall | Verified: Claude Code registers the project marketplace after trust but never fetches external plugins by itself |
 
 Measured on macOS: guard 60 ms per call (100 calls), 25 guard tests, 20 `mcs`
 tests, `test/e2e_setup.sh` (two projects, throwaway HOME, `config.toml`

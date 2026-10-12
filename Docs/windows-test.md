@@ -74,12 +74,13 @@ Start `jcode` in `mcs-test` and ask, one at a time:
 
 ## 4. Claude Code guard
 
-Start `claude` in `mcs-test`. Trust the folder when asked. Expected on first
-start: the `mcs` marketplace and the team plugins install (check with
-`/plugin`). Then repeat the table from step 3. Expected: same blocks, shown as
-a hook denial with the `[mcs guard]` reason.
-
-Also check `/plugin`: no errors for `archify`, `thermo-nuclear`, `clangd-lsp`.
+Setup in step 2 already ran `claude plugin install ... --scope project` for
+the 12 default plugins (it takes about a minute and prints the commands if
+`claude` is not on PATH). Start `claude` in `mcs-test` and trust the folder
+when asked. Check `/plugin`: the plugins from the `mcs` marketplace are
+installed and enabled, no errors for `archify`, `thermo-nuclear`,
+`clangd-lsp`. Then repeat the table from step 3. Expected: same blocks, shown
+as a hook denial with the `[mcs guard]` reason.
 
 ## 5. Plan approval
 

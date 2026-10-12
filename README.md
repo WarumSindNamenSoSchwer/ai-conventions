@@ -22,13 +22,15 @@ Windows provides the Git Bash that Claude Code hooks run in). It writes:
 |---|---|
 | `CLAUDE.md` | Import block for `AGENTS.md` and `rules/` (own content stays) |
 | `.claude/settings.json` | `mcs` marketplace, team plugins, guard hook, deny rules, autocompact 70 |
+| Claude Code plugin cache | The 12 default plugins, installed with `claude plugin install --scope project` |
 | `.jcode/prompt-overlay.md` | The rules inlined, because Jcode does not expand `@` imports |
 | `.jcode/skills/mcs-plan/` | Planning skill for Jcode |
 | `.gitattributes`, `.gitignore` | LF for plans, ignore `.mcs-guard.log` |
 | `~/.jcode/config.toml` | `[hooks] pre_tool` dispatcher, once per machine; a previous hook keeps running |
 
 After setup, commit those files. `.mcs/uninstall.sh` (or `.ps1`) removes
-exactly what setup wrote.
+exactly what setup wrote, including the plugins. `--no-plugins` skips the
+plugin install and removal. Every developer runs setup once after cloning.
 
 Daily use:
 
