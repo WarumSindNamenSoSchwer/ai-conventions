@@ -72,6 +72,9 @@ def to_rel(path, cwd, root):
             elif part != ".":
                 parts.append(part)
         pp = PurePosixPath(*parts) if parts else pp
+        if os.name == "nt":
+            pp = PurePosixPath(pp.as_posix().lower())
+            root_p = PurePosixPath(root_p.as_posix().lower())
         return pp.relative_to(root_p).as_posix()
     except ValueError:
         resolved = Path(raw)
