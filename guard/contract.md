@@ -40,6 +40,16 @@ For Claude Code, `guard.py --agent claude-code` prints
 "deny", "permissionDecisionReason": "..."}}` and exits 0 when blocking, as the
 Claude Code hook protocol expects.
 
+## Adapters
+
+| Agent | Wiring | Entry |
+|---|---|---|
+| Claude Code | `PreToolUse` hook in the project `.claude/settings.json`, written by setup from `adapters/claude-code/hooks.json` | `adapters/claude-code/run-guard.sh` picks the first Python 3.10+ (`python3`, `python`, `py`) and runs `guard.py --agent claude-code` |
+| Jcode | `[hooks] pre_tool` in `~/.jcode/config.toml`, one per machine | `adapters/jcode/dispatch.py` walks up from `JCODE_HOOK_CWD` to the nearest `.mcs/guard/guard.py`; none found means allow. A previous foreign `pre_tool` is kept in `mcs-dispatch.json` and runs first |
+
+The hook lives in project settings, not in the `mcs` plugin, so the guard
+works whether or not the plugin is installed and trusted.
+
 ## Failure behaviour
 
 Any internal error is caught, written to `.mcs-guard.log` in the project
