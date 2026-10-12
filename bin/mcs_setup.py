@@ -219,9 +219,17 @@ def read_pre_tool(config_text):
 
 
 def dispatch_command():
+    """Command for [hooks] pre_tool. Uses the base interpreter, not a venv that
+    may be deleted later: Jcode fails open, so a missing Python means no guard."""
     dispatch, _, _ = dispatch_paths()
-    py = Path(sys.executable).as_posix()
+    exe = getattr(sys, "_base_executable", None) or sys.executable
+    py = Path(exe).as_posix()
     return f'"{py}" "{dispatch.as_posix()}"'
+
+
+def dispatch_python(value):
+    m = re.match(r'\s*"([^"]+)"', value)
+    return m.group(1) if m else ""
 
 
 def install_dispatcher(root):
@@ -371,6 +379,8 @@ def check_project(root):
         _, value = read_pre_tool(read(dispatch_paths()[2]))
         if DISPATCH_NAME not in value:
             issues.append("Jcode pre_tool dispatcher not installed")
+        elif not Path(dispatch_python(value)).is_file():
+            issues.append(f"Jcode dispatcher Python missing ({dispatch_python(value)}); rerun setup")
         elif str(root) not in load_state().get("projects", []):
             issues.append("project not registered with the Jcode dispatcher")
     return issues
