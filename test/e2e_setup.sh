@@ -84,6 +84,14 @@ cp -R "$a" "$work/a.copy"
 (cd "$a" && .mcs/setup.sh >/dev/null)
 diff -r -x .git "$a" "$work/a.copy" >/dev/null || fail "setup not idempotent"
 (cd "$a" && .mcs/bin/mcs check >/dev/null) || fail "mcs check after setup"
+python3 - "$a/.claude/settings.json" <<'EOF'
+import json, sys
+p = sys.argv[1]; s = json.load(open(p))
+s["permissions"]["deny"].remove("Bash(gh pr merge *)")
+open(p, "w").write(json.dumps(s, indent=2) + "\n")
+EOF
+(cd "$a" && .mcs/bin/mcs check >/dev/null) && fail "mcs check missed a removed deny rule"
+(cd "$a" && .mcs/setup.sh >/dev/null && .mcs/bin/mcs check >/dev/null) || fail "setup did not restore deny rule"
 ok "setup idempotent, mcs check clean"
 
 # --- guard through the installed dispatcher, both projects

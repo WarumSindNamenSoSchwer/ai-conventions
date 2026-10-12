@@ -4,6 +4,7 @@ Everything setup writes into a project sits between markers or under keys it
 owns, so uninstall removes exactly that and nothing else.
 """
 
+import copy
 import filecmp
 import json
 import os
@@ -115,7 +116,7 @@ def is_ours_hook(entry):
 
 
 def merge_settings(settings):
-    s = dict(settings)
+    s = copy.deepcopy(settings)
     s.setdefault("extraKnownMarketplaces", {})[MARKETPLACE] = {
         "source": {"source": "directory", "path": ".mcs"}}
     enabled = s.setdefault("enabledPlugins", {})
@@ -132,7 +133,7 @@ def merge_settings(settings):
 
 
 def strip_settings(settings):
-    s = dict(settings)
+    s = copy.deepcopy(settings)
     s.get("extraKnownMarketplaces", {}).pop(MARKETPLACE, None)
     for key in list(s.get("enabledPlugins", {})):
         if key.endswith("@" + MARKETPLACE):
