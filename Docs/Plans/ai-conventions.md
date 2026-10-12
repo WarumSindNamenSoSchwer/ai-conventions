@@ -408,6 +408,8 @@ setup and uninstall (Phase 7), plugin marketplace validation (Phase 6).
 ## Implementation log (version 1, 2026-10-12)
 
 Deviations from the plan text above, found while building. Each was tested.
+Muri approved the deviations via chat on 2026-10-12 (Jcode rules overlay,
+guard hook in project settings, plugin install by setup).
 
 | Topic | Plan said | Built | Reason / evidence |
 |---|---|---|---|
