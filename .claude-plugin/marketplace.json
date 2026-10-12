@@ -1,0 +1,203 @@
+{
+  "name": "mcs",
+  "owner": {
+    "name": "MCS Datalabs"
+  },
+  "metadata": {
+    "description": "MCS team plugins. Third-party plugins are pinned by commit; update the sha deliberately."
+  },
+  "plugins": [
+    {
+      "name": "mcs",
+      "source": "./plugins/mcs",
+      "description": "MCS planning flow (mcs-plan skill)"
+    },
+    {
+      "name": "superpowers",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/obra/superpowers.git",
+        "sha": "bb92a77741419a4ab5f06e711a283343f1ada0c3"
+      },
+      "description": "Brainstorming, writing-plans, TDD, debugging (MIT)"
+    },
+    {
+      "name": "ponytail",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/DietrichGebert/ponytail.git",
+        "sha": "9b58c1ffb790c075ca32e70a89cf1d80588f4abf"
+      },
+      "description": "Simplification review (MIT)"
+    },
+    {
+      "name": "improve",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/shadcn/improve.git",
+        "sha": "cac56e1ebd3c279aa9153616cfeac7b174ab90f9"
+      },
+      "description": "Read-only codebase survey (MIT)"
+    },
+    {
+      "name": "thermo-nuclear",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/cursor/plugins.git",
+        "path": "cursor-team-kit/skills/thermo-nuclear-code-quality-review",
+        "sha": "1b6d44ff26d4e242f4e8f68c391e6d2f7ca16def"
+      },
+      "description": "Strict code quality review, skill from cursor-team-kit (MIT)",
+      "strict": false,
+      "skills": [
+        "./"
+      ]
+    },
+    {
+      "name": "archify",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/tt-a1i/archify.git",
+        "path": "archify",
+        "sha": "58ab0b98d2d0def8e49dced705c7b566936723ec"
+      },
+      "description": "Architecture diagrams, mandatory in plans (MIT)",
+      "strict": false,
+      "skills": [
+        "./"
+      ]
+    },
+    {
+      "name": "caveman",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/JuliusBrussee/caveman.git",
+        "sha": "2e08b9177c07bb7249a8a2d1a6758e5db281d002"
+      },
+      "description": "Shorter answers; team level below ultra (Apache-2.0)"
+    },
+    {
+      "name": "code-review",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "path": "plugins/code-review",
+        "sha": "f359d43b406057f1a8cdbc4ea93b827642c162e6"
+      },
+      "description": "PR review (Apache-2.0)"
+    },
+    {
+      "name": "claude-security",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "path": "plugins/claude-security",
+        "sha": "f359d43b406057f1a8cdbc4ea93b827642c162e6"
+      },
+      "description": "Vulnerability scan (Apache-2.0)"
+    },
+    {
+      "name": "security-guidance",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "path": "plugins/security-guidance",
+        "sha": "f359d43b406057f1a8cdbc4ea93b827642c162e6"
+      },
+      "description": "Insecure pattern warnings (Apache-2.0)"
+    },
+    {
+      "name": "skill-creator",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "path": "plugins/skill-creator",
+        "sha": "f359d43b406057f1a8cdbc4ea93b827642c162e6"
+      },
+      "description": "Build own skills (Apache-2.0)"
+    },
+    {
+      "name": "hookify",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "path": "plugins/hookify",
+        "sha": "f359d43b406057f1a8cdbc4ea93b827642c162e6"
+      },
+      "description": "Build hooks; maintainers only (Apache-2.0)",
+      "defaultEnabled": false
+    },
+    {
+      "name": "clangd-lsp",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "path": "plugins/clangd-lsp",
+        "sha": "f359d43b406057f1a8cdbc4ea93b827642c162e6"
+      },
+      "description": "C/C++ language server, needs clangd (Apache-2.0)",
+      "strict": false,
+      "lspServers": {
+        "clangd": {
+          "command": "clangd",
+          "args": [
+            "--background-index"
+          ],
+          "extensionToLanguage": {
+            ".c": "c",
+            ".h": "c",
+            ".cpp": "cpp",
+            ".cc": "cpp",
+            ".cxx": "cpp",
+            ".hpp": "cpp",
+            ".hxx": "cpp"
+          }
+        }
+      }
+    },
+    {
+      "name": "pyright-lsp",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "path": "plugins/pyright-lsp",
+        "sha": "f359d43b406057f1a8cdbc4ea93b827642c162e6"
+      },
+      "description": "Python language server, needs pyright (Apache-2.0)",
+      "strict": false,
+      "defaultEnabled": false,
+      "lspServers": {
+        "pyright": {
+          "command": "pyright-langserver",
+          "args": [
+            "--stdio"
+          ],
+          "extensionToLanguage": {
+            ".py": "python",
+            ".pyi": "python"
+          }
+        }
+      }
+    },
+    {
+      "name": "gopls-lsp",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "path": "plugins/gopls-lsp",
+        "sha": "f359d43b406057f1a8cdbc4ea93b827642c162e6"
+      },
+      "description": "Go language server, needs gopls (Apache-2.0)",
+      "strict": false,
+      "defaultEnabled": false,
+      "lspServers": {
+        "gopls": {
+          "command": "gopls",
+          "extensionToLanguage": {
+            ".go": "go"
+          }
+        }
+      }
+    }
+  ]
+}
