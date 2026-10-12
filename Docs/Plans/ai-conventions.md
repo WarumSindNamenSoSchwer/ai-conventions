@@ -127,6 +127,9 @@ Not cut, on purpose:
 ## Architecture (archify)
 
 Diagram: [`ai-conventions.architecture.html`](ai-conventions.architecture.html)
+(interactive, open in a browser)
+
+![ai-conventions architecture](assets/ai-conventions.architecture.light.png)
 
 ```mermaid
 flowchart LR
