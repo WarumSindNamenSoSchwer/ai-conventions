@@ -131,31 +131,6 @@ Diagram: [`ai-conventions.architecture.html`](ai-conventions.architecture.html)
 
 ![ai-conventions architecture](assets/ai-conventions.architecture.light.png)
 
-```mermaid
-flowchart LR
-  subgraph Repo [ai-conventions submodule .mcs/]
-    A[AGENTS.md + rules/]
-    G[guard.py]
-    M[mcs CLI]
-    S[setup.sh / setup.ps1]
-    P[marketplace.json + mcs-plan skill]
-    C[config/ .clang-format .clang-tidy .editorconfig]
-  end
-  subgraph Project [MCS project]
-    CM[CLAUDE.md imports AGENTS.md]
-    CS[.claude/settings.json]
-    JS[.jcode/skills/]
-    PL[Docs/Plans/]
-  end
-  CC[Claude Code] -->|PreToolUse hook| G
-  JC[Jcode] -->|global pre_tool dispatcher| G
-  G -->|reads status| PL
-  M -->|approve, check| PL
-  S --> CM & CS & JS
-  CS -->|enabledPlugins| P
-  P -->|pinned commits| X[superpowers, ponytail, improve, thermo-nuclear, archify, caveman, LSPs, security]
-```
-
 ## Quality review (thermo-nuclear)
 
 Review of the design above, 2026-10-12. Findings and how the plan answers them:
