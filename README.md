@@ -4,7 +4,7 @@ Shared rules, code style, plugins and agent guard rails for MCS projects.
 Included as the `.mcs/` git submodule; one setup command connects a project
 for Claude Code and Jcode on macOS and Windows.
 
-Status: version 1 implemented and tested on macOS, Windows test pending
+Status: version 1 on main, tested on macOS; Windows test pending
 ([guide](Docs/windows-test.md)). See [the plan](Docs/Plans/ai-conventions.md).
 
 ## Use in a project

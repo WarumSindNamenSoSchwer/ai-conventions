@@ -26,7 +26,7 @@ Claude Code and Jcode must be installed and logged in.
 ## 1. Unit tests
 
 ```powershell
-git clone -b feature/v1 https://github.com/WarumSindNamenSoSchwer/ai-conventions.git
+git clone https://github.com/WarumSindNamenSoSchwer/ai-conventions.git
 cd ai-conventions
 py -3 -m unittest discover -s guard
 py -3 -m unittest discover -s bin -p "test_*.py"
@@ -40,9 +40,8 @@ Expected: `OK` for both (25 and 20 tests).
 cd $env:TEMP
 git init -b main mcs-test; cd mcs-test
 git commit --allow-empty -m init
-git -c protocol.file.allow=always submodule add <path-to>\ai-conventions .mcs
-git -C .mcs checkout feature/v1
-git commit -am "add .mcs"
+git submodule add https://github.com/WarumSindNamenSoSchwer/ai-conventions.git .mcs
+git commit -m "add .mcs"
 powershell -ExecutionPolicy Bypass -File .mcs\setup.ps1
 ```
 
