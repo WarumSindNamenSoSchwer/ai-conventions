@@ -4,8 +4,41 @@ Shared rules, code style, plugins and agent guard rails for MCS projects.
 Included as the `.mcs/` git submodule; one setup command connects a project
 for Claude Code and Jcode on macOS and Windows.
 
-Status: implementation plan approved, phase 1 (core rules) done. See
-[the plan](Docs/Plans/ai-conventions.md).
+Status: version 1 implemented and tested on macOS, Windows test pending
+([guide](Docs/windows-test.md)). See [the plan](Docs/Plans/ai-conventions.md).
+
+## Use in a project
+
+```sh
+git submodule add <url-of-this-repo> .mcs
+.mcs/setup.sh                                               # macOS, Linux
+powershell -ExecutionPolicy Bypass -File .mcs\setup.ps1     # Windows
+```
+
+Setup needs Python 3.10+, git, Node.js and clang-format (Windows: Git for
+Windows provides the Git Bash that Claude Code hooks run in). It writes:
+
+| File | Content |
+|---|---|
+| `CLAUDE.md` | Import block for `AGENTS.md` and `rules/` (own content stays) |
+| `.claude/settings.json` | `mcs` marketplace, team plugins, guard hook, deny rules, autocompact 70 |
+| `.jcode/prompt-overlay.md` | The rules inlined, because Jcode does not expand `@` imports |
+| `.jcode/skills/mcs-plan/` | Planning skill for Jcode |
+| `.gitattributes`, `.gitignore` | LF for plans, ignore `.mcs-guard.log` |
+| `~/.jcode/config.toml` | `[hooks] pre_tool` dispatcher, once per machine; a previous hook keeps running |
+
+After setup, commit those files. `.mcs/uninstall.sh` (or `.ps1`) removes
+exactly what setup wrote.
+
+Daily use:
+
+| Command | Purpose |
+|---|---|
+| `.mcs/bin/mcs approve <plan>` | Approve `Docs/Plans/<plan>.md` for the current branch (humans only) |
+| `.mcs/bin/mcs status` | List plans, regenerate `Docs/Plans/index.md` |
+| `.mcs/bin/mcs check` | Is the setup current, did the guard log errors |
+
+On Windows prefix `py -3`, for example `py -3 .mcs\bin\mcs status`.
 
 ## Architecture
 
@@ -30,7 +63,19 @@ rendered with [archify](https://github.com/tt-a1i/archify).
 | [rules/agents.md](rules/agents.md) | Planning flow, mandatory plan sections, model per step |
 | [rules/embedded.md](rules/embedded.md) | Firmware: memory, safety, interrupts, hardware boundary |
 | [rules/c-cpp.md](rules/c-cpp.md) | C and C++ layout and naming |
+| [config/](config/) | `.clang-format`, `.clang-tidy`, `.editorconfig` and style samples |
+| [guard/](guard/) | Guard for flash, git and plan rules; [contract](guard/contract.md) and tests |
+| [adapters/](adapters/) | Hook wiring for Claude Code and the Jcode dispatcher |
+| [bin/mcs](bin/mcs) | `approve`, `status`, `check`, `setup`, `uninstall` |
+| [.claude-plugin/marketplace.json](.claude-plugin/marketplace.json) | Team plugins, third-party ones pinned by commit |
+| [plugins/mcs/](plugins/mcs/) | `mcs-plan` skill |
 | [Docs/Plans/](Docs/Plans/) | Plans, including the approved implementation plan |
 
-Coming in later phases: clang-format and clang-tidy config, the guard,
-the `mcs` CLI, the plugin marketplace, setup and uninstall scripts.
+## Tests
+
+```sh
+python3 -m unittest discover -s guard                  # guard rules, both agents
+python3 -m unittest discover -s bin -p 'test_*.py'     # mcs CLI
+test/e2e_setup.sh                                      # setup/uninstall, two projects, throwaway HOME
+claude plugin validate .
+```

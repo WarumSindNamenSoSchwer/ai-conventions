@@ -405,6 +405,27 @@ Not verified yet, covered by the phases: Claude Code hook live test
 (Phase 4), Windows runs (Phases 3, 5, 7), clang-tidy naming rules (Phase 2),
 setup and uninstall (Phase 7), plugin marketplace validation (Phase 6).
 
+## Implementation log (version 1, 2026-10-12)
+
+Deviations from the plan text above, found while building. Each was tested.
+
+| Topic | Plan said | Built | Reason / evidence |
+|---|---|---|---|
+| Jcode rules | `AGENTS.md` import | `.jcode/prompt-overlay.md` with the rules inlined between markers | Live test: Jcode does not expand `@path` imports in `AGENTS.md`; the overlay is loaded (codeword test) |
+| Claude Code hook | `plugins/mcs/hooks/hooks.json` | Hook in project `.claude/settings.json`, from `adapters/claude-code/hooks.json` | Guard must work before the folder is trusted and without the plugin; plugin hooks need trust |
+| Hook launcher | Python only | `adapters/claude-code/py.sh` picks `python3`, `python` or `py -3` | Windows Store `python3` stub; Claude Code runs shell-form hooks in Git Bash |
+| Guard log | `.mcs/guard.log` | `.mcs-guard.log` in the project root, git-ignored | The submodule is read-only for the project |
+| Agent check in `mcs approve` | type the name back | also refuses when `CLAUDECODE`, `CLAUDE_CODE_SESSION_ID` or `JCODE_SESSION_ID` is set | Verified which variables each agent sets in its shell |
+| Third-party plugin sources | `github` | `url` with `https://` and `sha` | `github` source clones over SSH and fails without a GitHub key |
+| thermo-nuclear | `cursor-team-kit` plugin | only the `thermo-nuclear-code-quality-review` skill directory | The whole kit adds 17 unrelated skills |
+| pyright-lsp, gopls-lsp, hookify | per team | `defaultEnabled: false`; enable in the project settings | Not every team needs them |
+| Setup logic | `setup.sh` / `setup.ps1` | Thin wrappers; the work is `bin/mcs_setup.py` | One implementation for both platforms |
+
+Measured on macOS: guard 60 ms per call (100 calls), 25 guard tests, 20 `mcs`
+tests, `test/e2e_setup.sh` (two projects, throwaway HOME, `config.toml`
+byte-identical after uninstall), all 15 plugins install from a clean HOME, live
+blocks in Jcode and Claude Code. Windows: see `Docs/windows-test.md`.
+
 ## Open points
 
 - `anthropics/skills` has no license file; nothing taken from it.
@@ -413,3 +434,6 @@ setup and uninstall (Phase 7), plugin marketplace validation (Phase 6).
 - archify triggers on many topics; watch token cost outside planning.
 - The shared Claude Max account is likely against Anthropic's consumer terms;
   decision for management, outside this plan.
+- This plan was approved in chat before `mcs approve` existed, so it has no
+  approval hash and `mcs status` lists it as `changed after approval`. Record
+  the approval with `mcs approve ai-conventions` if wanted.
