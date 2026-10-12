@@ -5,7 +5,7 @@
 set -eu
 src="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 work="$(mktemp -d)"
-export HOME="$work/home" JCODE_HOME="$work/home/.jcode"
+export HOME="$work/home" JCODE_HOME="$work/home/.jcode" MCS_NO_PLUGINS=1
 unset JCODE_SESSION_ID CLAUDE_CODE_SESSION_ID CLAUDECODE || true
 mkdir -p "$JCODE_HOME" "$work/bin"
 fail() { echo "FAIL: $*" >&2; exit 1; }
@@ -161,5 +161,21 @@ rm -f "$JCODE_HOME/config.toml"
 [ ! -e "$JCODE_HOME/config.toml" ] || { cat "$JCODE_HOME/config.toml"; fail "config.toml created and left behind"; }
 [ -z "$(git -C "$b" status --porcelain)" ] || fail "b not clean after second round"
 ok "fresh machine: setup + uninstall leave no config.toml"
+
+# --- Claude Code plugins at project scope (needs the claude CLI, network)
+if command -v claude >/dev/null 2>&1 && [ "${E2E_PLUGINS:-1}" = 1 ]; then
+    unset MCS_NO_PLUGINS
+    (cd "$b" && .mcs/setup.sh >/dev/null) || fail "setup with plugins"
+    n=$(cd "$b" && claude plugin list 2>/dev/null | grep -c '@mcs')
+    [ "$n" = 12 ] || fail "expected 12 enabled-by-default plugins, got $n"
+    [ ! -e "$HOME/.claude/settings.json" ] || ! grep -q '@mcs' "$HOME/.claude/settings.json" || fail "user settings touched"
+    (cd "$b" && .mcs/uninstall.sh >/dev/null) || fail "uninstall with plugins"
+    n=$(cd "$b" && claude plugin list 2>/dev/null | grep -c '@mcs' || true)
+    [ "$n" = 0 ] || fail "$n plugins left after uninstall"
+    [ -z "$(git -C "$b" status --porcelain)" ] || fail "b not clean after plugin round"
+    ok "Claude Code: 12 plugins installed at project scope, user settings untouched, uninstall removes them"
+else
+    echo "skip Claude Code plugin step (no claude CLI or E2E_PLUGINS=0)"
+fi
 
 echo "ALL PASSED ($work)"

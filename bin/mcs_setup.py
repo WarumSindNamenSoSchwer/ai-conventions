@@ -106,9 +106,10 @@ def hooks_snippet():
     return json.loads(read(MCS / "adapters" / "claude-code" / "hooks.json"))["hooks"]
 
 
-def plugin_names():
+def plugin_names(include_disabled=False):
     data = json.loads(read(MCS / ".claude-plugin" / "marketplace.json") or "{}")
-    return [p["name"] for p in data.get("plugins", []) if p.get("defaultEnabled", True)]
+    return [p["name"] for p in data.get("plugins", [])
+            if include_disabled or p.get("defaultEnabled", True)]
 
 
 def is_ours_hook(entry):
@@ -315,6 +316,37 @@ def target_root():
     return MCS.parent
 
 
+def install_claude_plugins(root):
+    """Claude Code fetches plugins with an external source only after an explicit
+    install on each machine. Best effort: without the CLI, print the commands."""
+    names = plugin_names()
+    claude = shutil.which("claude")
+    if not claude:
+        return [f"claude plugin install {n}@{MARKETPLACE} --scope project" for n in names]
+    import subprocess
+    failed = []
+    subprocess.run([claude, "plugin", "marketplace", "add", "./.mcs", "--scope", "project"], cwd=root,
+                   capture_output=True, text=True, timeout=120)
+    for n in names:
+        out = subprocess.run([claude, "plugin", "install", f"{n}@{MARKETPLACE}", "--scope", "project"],
+                             cwd=root, capture_output=True, text=True, timeout=300)
+        if "Successfully installed" not in out.stdout + out.stderr and "already installed" not in (out.stdout + out.stderr):
+            failed.append(f"claude plugin install {n}@{MARKETPLACE} --scope project")
+    return failed
+
+
+def uninstall_claude_plugins(root):
+    claude = shutil.which("claude")
+    if not claude:
+        return
+    import subprocess
+    for n in plugin_names(include_disabled=True):
+        subprocess.run([claude, "plugin", "uninstall", f"{n}@{MARKETPLACE}", "--scope", "project"],
+                       cwd=root, capture_output=True, text=True, timeout=120)
+    subprocess.run([claude, "plugin", "marketplace", "remove", MARKETPLACE], cwd=root,
+                   capture_output=True, text=True, timeout=120)
+
+
 def cmd_setup(args):
     root = target_root()
     set_block(root / "CLAUDE.md", claude_md_block())
@@ -331,14 +363,23 @@ def cmd_setup(args):
     (root / "Docs" / "Plans").mkdir(parents=True, exist_ok=True)
     if "--no-jcode" not in args:
         install_dispatcher(root)
+    todo = [] if ("--no-plugins" in args or os.environ.get("MCS_NO_PLUGINS")) else install_claude_plugins(root)
+    # claude may rewrite the settings file; keep our merge authoritative
+    save_json(settings_path, merge_settings(load_json(settings_path)))
     print(f"mcs setup: done in {root}")
-    print("Claude Code: open the project and trust the folder; plugins install on first start.")
+    if todo:
+        print("Claude Code plugins not installed yet; run in the project:")
+        for c in todo:
+            print(f"  {c}")
+    print("Claude Code: open the project and trust the folder.")
     print("Jcode: rules via .jcode/prompt-overlay.md, guard via the pre_tool dispatcher.")
     return 0
 
 
 def cmd_uninstall(args):
     root = target_root()
+    if not ("--no-plugins" in args or os.environ.get("MCS_NO_PLUGINS")):
+        uninstall_claude_plugins(root)
     drop_block(root / "CLAUDE.md")
     drop_block(root / ".jcode" / "prompt-overlay.md")
     settings_path = root / ".claude" / "settings.json"
