@@ -1,0 +1,47 @@
+# MCS C/C++ naming. Source of truth: ai-conventions/config/.clang-tidy.
+# Only the naming check is enabled here; projects may add their own checks.
+---
+Checks: '-*,readability-identifier-naming'
+WarningsAsErrors: 'readability-identifier-naming'
+HeaderFilterRegex: '.*'
+CheckOptions:
+  # Types
+  - { key: readability-identifier-naming.ClassCase,             value: CamelCase }
+  - { key: readability-identifier-naming.StructCase,            value: CamelCase }
+  - { key: readability-identifier-naming.EnumCase,              value: CamelCase }
+  - { key: readability-identifier-naming.UnionCase,             value: CamelCase }
+  - { key: readability-identifier-naming.TypedefCase,           value: CamelCase }
+  - { key: readability-identifier-naming.TypeAliasCase,         value: CamelCase }
+  # Functions
+  - { key: readability-identifier-naming.FunctionCase,          value: camelBack }
+  # clang-tidy has no separate class for file-static functions; allow the
+  # `_` + camelCase form for free functions (rule: only for static ones).
+  - { key: readability-identifier-naming.FunctionIgnoredRegexp, value: '^_[a-z][a-zA-Z0-9]*$' }
+  - { key: readability-identifier-naming.PublicMethodCase,      value: camelBack }
+  - { key: readability-identifier-naming.ProtectedMethodCase,   value: camelBack }
+  - { key: readability-identifier-naming.PrivateMethodCase,     value: camelBack }
+  - { key: readability-identifier-naming.PrivateMethodPrefix,   value: _ }
+  - { key: readability-identifier-naming.ProtectedMethodPrefix, value: _ }
+  # Variables
+  - { key: readability-identifier-naming.VariableCase,          value: lower_case }
+  - { key: readability-identifier-naming.ParameterCase,         value: lower_case }
+  - { key: readability-identifier-naming.LocalVariableCase,     value: lower_case }
+  - { key: readability-identifier-naming.PublicMemberCase,      value: lower_case }
+  - { key: readability-identifier-naming.PrivateMemberCase,     value: lower_case }
+  - { key: readability-identifier-naming.PrivateMemberSuffix,   value: _ }
+  - { key: readability-identifier-naming.ProtectedMemberCase,   value: lower_case }
+  - { key: readability-identifier-naming.ProtectedMemberSuffix, value: _ }
+  # Constants and enum values
+  - { key: readability-identifier-naming.ConstantCase,          value: UPPER_CASE }
+  - { key: readability-identifier-naming.LocalConstantCase,     value: UPPER_CASE }
+  - { key: readability-identifier-naming.StaticConstantCase,    value: UPPER_CASE }
+  - { key: readability-identifier-naming.GlobalConstantCase,    value: UPPER_CASE }
+  - { key: readability-identifier-naming.ConstexprVariableCase, value: UPPER_CASE }
+  - { key: readability-identifier-naming.ConstantParameterCase, value: lower_case }
+  - { key: readability-identifier-naming.EnumConstantCase,      value: UPPER_CASE }
+  - { key: readability-identifier-naming.ScopedEnumConstantCase, value: UPPER_CASE }
+  - { key: readability-identifier-naming.MacroDefinitionCase,   value: UPPER_CASE }
+  # Global object instances
+  - { key: readability-identifier-naming.GlobalVariableCase,    value: UPPER_CASE }
+  # Namespaces are left free (existing code uses APP, HAL, CORE)
+...
