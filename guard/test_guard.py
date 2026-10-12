@@ -211,6 +211,8 @@ class GitRules(GuardCase):
             "git -C . push origin main",
             "cd sub && git push origin main",
             "gh pr merge 12 --squash",
+            "/usr/local/bin/gh pr merge 12",
+            "gh.exe pr merge 12",
         ]:
             self.check(True, "shell", command=cmd)
 

@@ -261,7 +261,9 @@ def remove_dispatcher(root):
     state = load_state()
     if not state:
         return "Jcode dispatcher: not installed"
-    projects = [p for p in state.get("projects", []) if p != str(root) and project_uses_mcs(Path(p))]
+    # Keep every other registered project unless its directory is gone; a
+    # project with a temporarily missing submodule still counts as a user.
+    projects = [p for p in state.get("projects", []) if p != str(root) and Path(p).is_dir()]
     if projects:
         state["projects"] = projects
         save_state(state)

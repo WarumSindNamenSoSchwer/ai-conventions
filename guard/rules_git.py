@@ -87,12 +87,13 @@ def check(call):
         return None
     for seg in _split_segments(call.command):
         tokens = _tokens(seg.strip())
-        if len(tokens) >= 3 and tokens[0] == "gh" and tokens[1] == "pr" and tokens[2] == "merge":
+        if (len(tokens) >= 3 and re.search(r"(^|/)gh(\.exe)?$", tokens[0], re.I)
+                and tokens[1] == "pr" and tokens[2] == "merge"):
             return "git: never merge pull requests yourself. A human reviewer merges."
         sub, args = _git_subcommand(tokens)
         if sub == "push":
             if "--tags" in args and len([a for a in args if not a.startswith("-")]) <= 1:
-                continue
+                continue  # tags only, no branch is updated
             for target in push_targets(args, call.cwd):
                 if target == "<all branches>" or PROTECTED.match(target or ""):
                     return (f"git: push to protected branch '{target}' is blocked. Push a "

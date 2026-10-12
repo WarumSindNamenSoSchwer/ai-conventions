@@ -30,7 +30,7 @@ def split_front_matter(text):
     text = normalize(text)
     if not text.startswith("---\n"):
         return {}, text
-    end = text.find("\n---\n", 4)
+    end = text.find("\n---\n", 4)  # normalize() guarantees a trailing newline
     if end < 0:
         return {}, text
     header = text[4:end]

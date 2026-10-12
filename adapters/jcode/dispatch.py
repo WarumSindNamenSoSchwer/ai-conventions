@@ -42,9 +42,9 @@ def run_previous(raw):
     if not previous:
         return 0
     try:
-        args = shlex.split(previous)
-        if args and args[0].startswith("~/"):
-            args[0] = str(Path.home() / args[0][2:])
+        args = shlex.split(os.path.expandvars(previous), posix=os.name != "nt")
+        if args and args[0].startswith("~"):
+            args[0] = os.path.expanduser(args[0])
         out = subprocess.run(args, input=raw, text=True, capture_output=True, timeout=4)
     except (OSError, ValueError, subprocess.SubprocessError):
         return 0
