@@ -9,14 +9,86 @@ Status: version 1 implemented and tested on macOS, Windows test pending
 
 ## Use in a project
 
+### 1. Prerequisites (once per machine)
+
+Python 3.10+, git, Node.js, clang-format, and Claude Code and/or Jcode.
+
 ```sh
-git submodule add <url-of-this-repo> .mcs
-.mcs/setup.sh                                               # macOS, Linux
-powershell -ExecutionPolicy Bypass -File .mcs\setup.ps1     # Windows
+brew install python git node clang-format                                  # macOS
+winget install Python.Python.3.12 Git.Git OpenJS.NodeJS.LTS LLVM.LLVM     # Windows
 ```
 
-Setup needs Python 3.10+, git, Node.js and clang-format (Windows: Git for
-Windows provides the Git Bash that Claude Code hooks run in). It writes:
+On Windows, Git for Windows brings Git Bash, which the Claude Code hooks need.
+
+### 2. Connect the project
+
+Repository URL for now: `https://github.com/WarumSindNamenSoSchwer/ai-conventions.git`
+(moves to the `mcs-datalabs` organisation later).
+
+New project, not connected yet (one person does this once):
+
+```sh
+git submodule add <repo-url> .mcs
+.mcs/setup.sh                                               # macOS, Linux
+powershell -ExecutionPolicy Bypass -File .mcs\setup.ps1     # Windows
+git add -A && git commit -m "Connect MCS conventions"
+```
+
+Project that already has `.mcs` (everyone else, after cloning):
+
+```sh
+git submodule update --init
+.mcs/setup.sh                                               # or setup.ps1 on Windows
+```
+
+Setup takes about a minute (it installs the Claude Code plugins). When
+Claude Code first opens the project, accept "trust this folder".
+
+### 3. Daily work
+
+1. Create a branch: `git checkout -b feature/<name>`.
+2. Ask the agent: "Use mcs-plan to plan <task>". It writes
+   `Docs/Plans/<name>.md` and opens the architecture diagram.
+3. Read the plan. When it is good, approve it in **your own terminal**:
+   `.mcs/bin/mcs approve <name>` (Windows: `py -3 .mcs\bin\mcs approve <name>`)
+   and type the plan name to confirm.
+4. Now the agent may edit code on this branch.
+5. Push the branch and open a pull request. Never push to `main`, `develop`
+   or `release/*`.
+
+If you change the plan after approval, approve it again.
+
+### When the guard blocks
+
+The agent sees a message starting with `[mcs guard]`:
+
+| Message | What to do |
+|---|---|
+| `git: push to protected branch` | Push a `feature/` or `fix/` branch and open a pull request |
+| `flash: ...` | Flash, erase or debug the device yourself |
+| `plan: ... has no approved plan` | Plan with `mcs-plan`, then `mcs approve` (step 3) |
+| `plan: only a human approves plans` | Run `mcs approve` yourself, not through the agent |
+
+### Commands
+
+| Command | Purpose |
+|---|---|
+| `.mcs/bin/mcs approve <plan>` | Approve `Docs/Plans/<plan>.md` for the current branch (humans only) |
+| `.mcs/bin/mcs status` | List plans, regenerate `Docs/Plans/index.md` |
+| `.mcs/bin/mcs check` | Is the setup current, did the guard log errors |
+
+On Windows prefix `py -3`, for example `py -3 .mcs\bin\mcs status`.
+
+### Update or remove
+
+Update: `git submodule update --remote .mcs`, rerun setup, commit.
+`mcs check` says when setup is outdated.
+
+Remove: `.mcs/uninstall.sh` (or `uninstall.ps1`) removes exactly what setup
+wrote, including the plugins. The `.mcs` submodule itself stays; remove it
+with `git rm .mcs`.
+
+### What setup writes
 
 | File | Content |
 |---|---|
@@ -28,19 +100,7 @@ Windows provides the Git Bash that Claude Code hooks run in). It writes:
 | `.gitattributes`, `.gitignore` | LF for plans, ignore `.mcs-guard.log` |
 | `~/.jcode/config.toml` | `[hooks] pre_tool` dispatcher, once per machine; a previous hook keeps running |
 
-After setup, commit those files. `.mcs/uninstall.sh` (or `.ps1`) removes
-exactly what setup wrote, including the plugins. `--no-plugins` skips the
-plugin install and removal. Every developer runs setup once after cloning.
-
-Daily use:
-
-| Command | Purpose |
-|---|---|
-| `.mcs/bin/mcs approve <plan>` | Approve `Docs/Plans/<plan>.md` for the current branch (humans only) |
-| `.mcs/bin/mcs status` | List plans, regenerate `Docs/Plans/index.md` |
-| `.mcs/bin/mcs check` | Is the setup current, did the guard log errors |
-
-On Windows prefix `py -3`, for example `py -3 .mcs\bin\mcs status`.
+`--no-plugins` skips the plugin install and removal.
 
 ## Architecture
 
