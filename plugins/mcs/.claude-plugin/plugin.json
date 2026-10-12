@@ -1,0 +1,9 @@
+{
+  "name": "mcs",
+  "version": "1.0.0",
+  "description": "MCS planning flow: mcs-plan skill",
+  "author": {
+    "name": "MCS Datalabs"
+  },
+  "license": "UNLICENSED"
+}
