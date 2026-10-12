@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "ai-conventions v1: how rules and guard rails reach each agent",
+    "output": "ai-conventions.architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "dev", "type": "external", "label": "Developer", "sublabel": "approves plans", "pos": [40, 300], "size": [130, 60] },
+    { "id": "cc", "type": "frontend", "label": "Claude Code", "sublabel": "PreToolUse hook", "pos": [260, 190], "size": [140, 60] },
+    { "id": "jc", "type": "frontend", "label": "Jcode", "sublabel": "global pre_tool", "pos": [260, 410], "size": [140, 60] },
+    { "id": "guard", "type": "security", "label": "guard.py", "sublabel": "flash · git · plan · approve", "pos": [500, 300], "size": [180, 64], "tag": "exit 2 = block" },
+    { "id": "plans", "type": "database", "label": "Docs/Plans/", "sublabel": "status + body hash", "pos": [780, 300], "size": [150, 60] },
+    { "id": "mcs", "type": "backend", "label": "mcs CLI", "sublabel": "approve · status · check", "pos": [780, 110], "size": [150, 60], "tag": "TTY only" },
+    { "id": "rules", "type": "backend", "label": "AGENTS.md + rules/", "sublabel": "imported by project", "pos": [500, 110], "size": [180, 60] },
+    { "id": "market", "type": "cloud", "label": "marketplace.json", "sublabel": "pinned plugin commits", "pos": [500, 500], "size": [180, 60] },
+    { "id": "setup", "type": "backend", "label": "setup.sh / .ps1", "sublabel": "one-time per project", "pos": [40, 500], "size": [130, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": ".mcs/ submodule (ai-conventions)", "wraps": ["guard", "mcs", "rules", "market"] }
+  ],
+  "connections": [
+    { "id": "dev-approve", "from": "dev", "to": "mcs", "label": "mcs approve", "variant": "emphasis", "fromSide": "top", "toSide": "left", "via": [[105, 60], [740, 60], [740, 140]] },
+    { "id": "cc-guard", "from": "cc", "to": "guard", "label": "tool call" },
+    { "id": "jc-guard", "from": "jc", "to": "guard", "label": "tool call" },
+    { "id": "guard-plans", "from": "guard", "to": "plans", "label": "reads status", "variant": "security" },
+    { "id": "mcs-plans", "from": "mcs", "to": "plans", "label": "writes approval", "fromSide": "bottom", "toSide": "top" },
+    { "id": "cc-rules", "from": "cc", "to": "rules", "label": "CLAUDE.md import", "variant": "dashed", "fromSide": "top", "toSide": "left" },
+    { "id": "jc-market", "from": "jc", "to": "market", "label": "skills copied", "variant": "dashed", "fromSide": "bottom", "toSide": "left" },
+    { "id": "setup-jc", "from": "setup", "to": "jc", "label": "installs dispatcher", "variant": "dashed", "fromSide": "right", "toSide": "bottom" }
+  ],
+  "cards": [
+    { "dot": "rose", "title": "Guard rails", "items": ["Block flashing and probe tools", "Block push to main, develop, release/*", "Block code edits without an approved plan", "Agents cannot approve plans"] },
+    { "dot": "cyan", "title": "Plan gate", "items": ["Mandatory sections: brainstorming, improve, ponytail, archify, thermo-nuclear", "Approval stores a body hash; edits revoke it"] },
+    { "dot": "emerald", "title": "Plugins", "items": ["superpowers, ponytail, improve, thermo-nuclear, archify, caveman", "LSPs, code-review, security; all pinned by commit"] }
+  ]
+}
